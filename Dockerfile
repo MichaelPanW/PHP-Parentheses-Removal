@@ -15,6 +15,3 @@ WORKDIR /var/www/html
 
 # Copy application files
 COPY . .
-
-# Install PHP dependencies using Composer
-RUN composer install
