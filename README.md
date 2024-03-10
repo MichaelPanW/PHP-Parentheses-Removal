@@ -12,12 +12,24 @@ Expression is a PHP class that removes unnecessary parentheses from mathematical
 
 ## Usage
 ### Running the Program
+#### Using Docker
+
 To run the program, use the following command:
 
 ```bash
 COMMAND="php index.php" docker-compose up --build
 ```
 This command will execute the index.php script with the specified command.
+
+#### Using PHP Directly
+If you already have PHP installed on your environment, you can execute the following commands:
+
+```bash
+composer install
+php index.php
+```
+These commands will install dependencies using Composer and then run the index.php script directly.
+
 ### Running Tests
 To run the PHPUnit tests, use the following command:
 
