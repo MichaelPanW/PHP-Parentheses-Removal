@@ -12,19 +12,29 @@ class Expression
      */
     public function removeUnnecessaryParentheses(string $expression): string
     {
-        $shift = 0;
+        $expression = $this->removeParenthesesWithNumbers($expression);
         foreach (['*', '/', '+', '-'] as $value) {
+            $shift = 0;
+            $found = false;
             $centers = $this->findMultiplicationPositions($expression, $value);
-            if ($centers) break;
-        }
-        foreach ($centers as $center) {
-            $center = $center - $shift;
-            $left = $this->findLeftBracketPosition($expression, $center);
-            $right = $this->findRightBracketPosition($expression, $center);
-            if (($left !== null) && ($right !== null)) {
-                $expression = $this->removeCharAtPosition($expression, $right);
-                $expression = $this->removeCharAtPosition($expression, $left);
-                $shift = $shift + 2;
+            foreach ($centers as $center) {
+                $center -= $shift;
+                $left = $this->findLeftBracketPosition($expression, $center);
+                $right = $this->findRightBracketPosition($expression, $center);
+                if (($left !== null) && ($right !== null)) {
+                    // Check if the left bracket is preceded by '/' or '-'
+                    if ($left > 0 && in_array($expression[$left - 1], ['/', '-'])) {
+                        continue;
+                    }
+                    $expression = $this->removeCharAtPosition($expression, $right);
+                    $expression = $this->removeCharAtPosition($expression, $left);
+                    $shift += 2;
+                    $found = true;
+                }
+            }
+            // Break the loop if the most prioritized operator is found.
+            if ($found) {
+                break;
             }
         }
         return $expression;
@@ -113,5 +123,26 @@ class Expression
         $rightPart = substr($expression, $position + 1);
 
         return $leftPart . $rightPart;
+    }
+
+    /**
+     * Remove parentheses enclosing numbers or letters from the expression.
+     * 
+     * @param string $expression
+     * @return string
+     */
+    private function removeParenthesesWithNumbers(string $expression): string
+    {
+        $shift = 0;
+        $matches = [];
+        // Find all substrings matching the pattern (letters or numbers inside parentheses)
+        preg_match_all('/\([a-zA-Z0-9]+\)/', $expression, $matches, PREG_OFFSET_CAPTURE);
+        foreach (current($matches) as $value) {
+            $value[1] = $value[1] - $shift;
+            $expression = $this->removeCharAtPosition($expression, strlen($value[0]) + $value[1] - 1);
+            $expression = $this->removeCharAtPosition($expression, $value[1]);
+            $shift = $shift + 2;
+        }
+        return $expression;
     }
 }
