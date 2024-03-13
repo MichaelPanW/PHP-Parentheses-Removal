@@ -96,5 +96,25 @@ class ExpressionTest extends TestCase
             "5*-3",
             $expression->removeUnnecessaryParentheses("5*(-3)")
         );
+
+        $this->assertEquals(
+            "(2 + 2) * 1",
+            $expression->removeUnnecessaryParentheses("(2 + 2) * 1")
+        );
+
+        $this->assertEquals(
+            "1+(-1)",
+            $expression->removeUnnecessaryParentheses("1+(-1)")
+        );
+
+        $this->assertEquals(
+            "2*(2+3-4*6)+8+7*4",
+            $expression->removeUnnecessaryParentheses("((2*((2+3)-(4*6))+(8+(7*4))))")
+        );
+
+        $this->assertEquals(
+            "2*(2*3-(4+6))+8+7*4",
+            $expression->removeUnnecessaryParentheses("((2*((2*3)-(4+6))+(8+(7*4))))")
+        );
     }
 }
